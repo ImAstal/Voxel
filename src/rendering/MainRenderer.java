@@ -52,8 +52,11 @@ public class MainRenderer {
 		
 		for(Mesh mesh : this.meshList) {
 			if(mesh.GetHitbox().IsInFrustum(frustum)) {
-				mesh.Render(this.camera);
-				MODEL_CALCUL++;
+				if(mesh.DataUpdated() && mesh.IsReadyToRender()) {
+					mesh.Render(this.camera);
+					MODEL_CALCUL++;
+				} else if(mesh.DataUpdated())
+					mesh.UpdateData();
 			}
 			else
 				CLIP_CALCUL++;

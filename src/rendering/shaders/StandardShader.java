@@ -19,6 +19,7 @@ public class StandardShader extends ShaderProgram {
 	protected void BindAllAttributes() {
 		super.BindAttribute(0, "position");
 		super.BindAttribute(1, "normal");
+		super.BindAttribute(2, "texture");
 	}
 
 	protected void GetAllUniformLocations() {

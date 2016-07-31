@@ -6,9 +6,12 @@ import static game.Constants.*;
 
 import java.util.Arrays;
 
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
 import org.lwjgl.util.vector.Vector3f;
 
 import rendering.shaders.Shaders;
+import resources.ResourcesManager;
 import utils.Hitbox;
 import utils.Maths;
 
@@ -21,19 +24,23 @@ public class ChunkMesh extends Mesh {
 		this.chunk = chunk;
 	}
 	
-	public void UpdateData() {
+	public void GenerateMesh() {
 		float[] vertices = new float[CHUNK_SIZE * CHUNK_HEIGHT * CHUNK_SIZE * 4 * 3 * 6];
 		float[] normals = new float[CHUNK_SIZE * CHUNK_HEIGHT * CHUNK_SIZE * 4 * 3 * 6];
+		float[] textures = new float[CHUNK_SIZE * CHUNK_HEIGHT * CHUNK_SIZE * 6 * 8];
 		int[] indices = new int[CHUNK_SIZE * CHUNK_HEIGHT * CHUNK_SIZE * 6 * 6];
-		int verticePointer = 0, normalPointer = 0, indicePointer = 0, faceCount = 0;
+		int verticePointer = 0, normalPointer = 0, texturePointer = 0, indicePointer = 0, faceCount = 0;
 		for(int x = 0; x < CHUNK_SIZE; x++) {
 			for(int y = 0; y < CHUNK_HEIGHT; y++) {
 				for(int z = 0; z < CHUNK_SIZE; z++) {
 					if(chunk.GetBlockId(x, y, z) == 0)
 						continue;
+					int textureId = 0;
 					if(!chunk.IsOpaque(x, y + 1, z)) {
 						this.CubeTop(vertices, normals, verticePointer, normalPointer, new Vector3f(x, y, z));
 						this.AddIndices(indices, indicePointer, faceCount);
+						this.AddTexture(textureId, textures, texturePointer);
+						texturePointer += 8;
 						verticePointer += 3*4;
 						normalPointer += 4*3;
 						indicePointer += 6;
@@ -43,6 +50,8 @@ public class ChunkMesh extends Mesh {
 					if(!chunk.IsOpaque(x - 1, y, z)) {
 						this.CubeLeft(vertices, normals, verticePointer, normalPointer, new Vector3f(x, y, z));
 						this.AddIndices(indices, indicePointer, faceCount);
+						this.AddTexture(textureId, textures, texturePointer);
+						texturePointer += 8;
 						verticePointer += 3*4;
 						normalPointer += 4*3;
 						indicePointer += 6;
@@ -52,6 +61,8 @@ public class ChunkMesh extends Mesh {
 					if(!chunk.IsOpaque(x + 1, y, z)) {
 						this.CubeRight(vertices, normals, verticePointer, normalPointer, new Vector3f(x, y, z));
 						this.AddIndices(indices, indicePointer, faceCount);
+						this.AddTexture(textureId, textures, texturePointer);
+						texturePointer += 8;
 						verticePointer += 3*4;
 						normalPointer += 4*3;
 						indicePointer += 6;
@@ -61,6 +72,8 @@ public class ChunkMesh extends Mesh {
 					if(!chunk.IsOpaque(x, y, z + 1)) {
 						this.CubeFront(vertices, normals, verticePointer, normalPointer, new Vector3f(x, y, z));
 						this.AddIndices(indices, indicePointer, faceCount);
+						this.AddTexture(textureId, textures, texturePointer);
+						texturePointer += 8;
 						verticePointer += 3*4;
 						normalPointer += 4*3;
 						indicePointer += 6;
@@ -69,6 +82,8 @@ public class ChunkMesh extends Mesh {
 					if(!chunk.IsOpaque(x, y, z - 1)) {
 						this.CubeBack(vertices, normals, verticePointer, normalPointer, new Vector3f(x, y, z));
 						this.AddIndices(indices, indicePointer, faceCount);
+						this.AddTexture(textureId, textures, texturePointer);
+						texturePointer += 8;
 						verticePointer += 3*4;
 						normalPointer += 4*3;
 						indicePointer += 6;
@@ -81,12 +96,15 @@ public class ChunkMesh extends Mesh {
 
 		vertices = Arrays.copyOf(vertices, verticePointer);
 		normals = Arrays.copyOf(normals, normalPointer);
+		textures = Arrays.copyOf(textures, texturePointer);
 		indices = Arrays.copyOf(indices, indicePointer);
 		
-		this.SetData(vertices, normals, indices);
+		this.SetData(vertices, normals, textures, indices);
 	}
 	
 	public void Render(Camera camera) {
+		GL13.glActiveTexture(GL13.GL_TEXTURE0);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, ResourcesManager.TERRAIN.GetId());
 		Shaders.STANDARD.Bind();
 		Shaders.STANDARD.LoadViewMatrix(camera.GetViewMatrix());
 		Shaders.STANDARD.LoadTransformationMatrix(Maths.CreaterTransformationMatrix(this.chunk.GetWorldLocation(), new Vector3f(0f, 0f, 0f), 1f));
@@ -185,6 +203,21 @@ public class ChunkMesh extends Mesh {
 		indices[indicePointer+5] = faceCount * 4 + 3;
 	}
 	
+	private void AddTexture(int textureId, float[] textures, int texturePointer) {
+		float x = 0;
+		float y = 0;
+		float width = (float)ResourcesManager.TERRAIN.GetSubWidth() / (float)ResourcesManager.TERRAIN.GetWidth();
+		float height = (float)ResourcesManager.TERRAIN.GetSubHeight() / (float)ResourcesManager.TERRAIN.GetHeight();
+		textures[texturePointer] = x;
+		textures[texturePointer+1] = y;
+		textures[texturePointer+2] = x + width;
+		textures[texturePointer+3] = y;
+		textures[texturePointer+4] = x + width;
+		textures[texturePointer+5] = y + height;
+		textures[texturePointer+6] = x;
+		textures[texturePointer+7] = y + height;
+	}
+	 
 	/*private Vector3f GetSurfaceNormal(Vector3f v1, Vector3f v2, Vector3f v3) {
 		Vector3f polyVector1 = new Vector3f(v2.x - v1.x, v2.y - v1.y, v2.z - v1.z);
 		Vector3f polyVector2 = new Vector3f(v3.x - v1.x, v3.y - v1.y, v3.z - v1.z);

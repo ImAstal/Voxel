@@ -7,6 +7,7 @@ import org.lwjgl.opengl.PixelFormat;
 
 import rendering.MainRenderer;
 import rendering.shaders.Shaders;
+import resources.ResourcesManager;
 import scene.*;
 import utils.Timer;
 
@@ -31,6 +32,7 @@ public class Voxel {
 		}
 		
 		Shaders.Initialize();
+		ResourcesManager.Initialize();
 		this.renderer = new MainRenderer();
 		this.timer = new Timer();
 		this.scene = new SceneGame(this.renderer);
@@ -45,6 +47,7 @@ public class Voxel {
 			Display.update();
 		}
 		
+		this.scene.Cleanup();
 		this.renderer.Cleanup();
 		Shaders.Cleanup();
 	}

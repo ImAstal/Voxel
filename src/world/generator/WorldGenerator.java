@@ -6,7 +6,7 @@ import static game.Constants.*;
 
 public class WorldGenerator {
 	
-	private static final int SEED = 12345;
+	private static final int SEED = 1234585;
 	private static SimplexNoise noise = new SimplexNoise(SEED);
 	private static SimplexNoise noise2 = new SimplexNoise(SEED + 1);
 	private static SimplexNoise noise3 = new SimplexNoise(SEED + 2);
@@ -57,7 +57,7 @@ public class WorldGenerator {
 	}
 	
 	private static int GetHeight(float rx, float rz) {
-		return (int)(60 + noise.noise(rx / SCALE, rz / SCALE) * 5f + noise2.noise(rx / SCALE / 2f, rz / SCALE / 2f) * 7f + noise3.noise(rx / SCALE / 3f, rz / SCALE /3f) * 20f);
+		return (int)(60 + noise.noise(rx / SCALE, rz / SCALE) * 5f + noise2.noise(rx / SCALE, rz / SCALE) * 7f + noise3.noise(rx / SCALE / 9f, rz / SCALE /9f) * 50f);
 	}
 	
 	private static byte GetBlock(float rx, float ry, float rz) {

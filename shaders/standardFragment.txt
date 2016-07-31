@@ -2,6 +2,9 @@
 
 in vec3 lightVector;
 in vec3 surfaceNormal;
+in vec2 texCoords;
+
+uniform sampler2D texture_diffuse;
 
 out vec4 out_color;
 
@@ -9,8 +12,8 @@ uniform vec3 lightColor;
 
 void main(void){
 	float val = dot(lightVector, surfaceNormal);
-	float brightness = max(val, 0.0);
+	float brightness = max(val, 0.3);
 	vec3 color = brightness * lightColor;
 	
-    out_color = vec4(color, 1.0);
+    out_color = texture(texture_diffuse, texCoords) * vec4(color, 1.0);
 }

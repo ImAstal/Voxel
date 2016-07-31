@@ -15,5 +15,9 @@ public class SceneGame extends Scene {
 	public void Update(float delta) {
 		this.world.Update(delta);
 	}
+	
+	public void Cleanup() {
+		this.world.Cleanup();
+	}
 
 }

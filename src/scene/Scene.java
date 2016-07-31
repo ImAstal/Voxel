@@ -11,5 +11,7 @@ public abstract class Scene {
 	}
 	
 	public abstract void Update(float delta);
+	
+	public abstract void Cleanup();
 
 }
