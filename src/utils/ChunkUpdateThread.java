@@ -20,15 +20,20 @@ public class ChunkUpdateThread extends Thread {
 		this.running = true;
 		while(this.running) {
 			try {
-				if(this.chunks.size() == 0)
+				if(this.chunks.size() == 0) {
+					this.running = false;
 					continue;
+				}
 				Chunk chunk = this.chunks.get(0);
-				WorldGenerator.GenerateChunk(chunk);
+				if(chunk == null) {
+					System.err.println("dqzd");
+					continue;
+				}
+				if(!chunk.IsGenerated())
+					WorldGenerator.GenerateChunk(chunk);
 				chunk.GetMesh().GenerateMesh();
 				this.chunks.remove(0);
 				Thread.sleep((long)(1f/60f));
-				if(this.chunks.size() == 0)
-					this.running = false;
 			} catch(Exception e) {
 				e.printStackTrace();
 				this.running = false;
@@ -42,8 +47,6 @@ public class ChunkUpdateThread extends Thread {
 	
 	public void AddChunk(Chunk chunk) {
 		this.chunks.add(chunk);
-		if(this.running == false)
-			this.start();
 	}
 	
 	

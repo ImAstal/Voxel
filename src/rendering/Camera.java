@@ -21,8 +21,10 @@ public class Camera {
     }
 
     public void Update(float delta) {
-        this.Yaw(Mouse.getDX() * this.sensitivity);
-        this.Pitch(Mouse.getDY() * this.sensitivity);
+	    if(Mouse.isGrabbed()) {
+	        this.Yaw(Mouse.getDX() * this.sensitivity);
+	        this.Pitch(Mouse.getDY() * this.sensitivity);
+    	}
         if(Keyboard.isKeyDown(Keyboard.KEY_E))
             this.position.y += speed;
         if(Keyboard.isKeyDown(Keyboard.KEY_A))
@@ -62,6 +64,18 @@ public class Camera {
 
     public Vector3f GetPosition() {
         return new Vector3f(-this.position.x, this.position.y, -this.position.z);
+    }
+    
+    public Vector3f GetPPosition() {
+        return new Vector3f(this.position.x, this.position.y, this.position.z);
+    }
+    
+    public float GetYaw() {
+    	return this.yaw;
+    }
+    
+    public float GetPitch() {
+    	return this.pitch;
     }
 
     public Matrix4f GetViewMatrix() {

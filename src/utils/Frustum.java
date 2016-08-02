@@ -3,7 +3,6 @@ package utils;
 import java.nio.FloatBuffer;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL11;
 
 import rendering.Camera;
  

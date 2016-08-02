@@ -11,6 +11,8 @@ public class Chunk {
 	private ChunkMesh mesh;
 	private Vector3f location;
 	
+	private boolean generated;
+	
 	private byte[][][] blocks;
 	public byte[][] leftBorder, rightBorder, topBorder, bottomBorder, backBorder, frontBorder;
 	
@@ -25,6 +27,7 @@ public class Chunk {
 		this.backBorder = new byte[CHUNK_SIZE][CHUNK_HEIGHT];
 		this.topBorder = new byte[CHUNK_SIZE][CHUNK_SIZE];
 		this.bottomBorder = new byte[CHUNK_SIZE][CHUNK_SIZE];
+		this.generated = false;
 	}
 	
 	public void Update(float delta) {
@@ -46,6 +49,10 @@ public class Chunk {
 	}
 	
 	public boolean IsOpaque(int x, int y, int z) {
+		return this.IsOpaque(x, y, z, true);
+	}
+	
+	public boolean IsOpaque(int x, int y, int z, boolean defaultValue) {
 		if(!this.IsInsideChunk(x, y, z)) {
 			int tx = TestWidth(x);
 			int tz = TestWidth(z);
@@ -63,7 +70,7 @@ public class Chunk {
 						return this.rightBorder[z][y] != 0;
 				}
 			}
-			return true;
+			return defaultValue;
 		}
 		else
 			return this.blocks[x][y][z] != 0;
@@ -81,17 +88,27 @@ public class Chunk {
 		return new Vector3f(this.location.x * CHUNK_SIZE, this.location.y * CHUNK_HEIGHT, this.location.z * CHUNK_SIZE);
 	}
 	
-	public String GetKey() {
-		int x = (int)this.location.x;
-		int y = (int)this.location.y;
-		int z = (int)this.location.z;
-		return x + "-" + y + "-" + z;
+	public boolean IsGenerated() {
+		return this.generated;
 	}
 	
 	public void SetBlockId(byte id, int x, int y, int z) {
 		if(!this.IsInsideChunk(x, y, z))
 			return;
 		this.blocks[x][y][z] = id;
+	}
+	
+	public void SetBlock(byte id, int x, int y, int z) {
+		this.blocks[x][y][z] = id;
+	}
+	
+	public void SetDirty() {
+		this.mesh.SetDataUpdated(false);
+		this.mesh.SetReadyToRender(false);
+	}
+	
+	public void SetGenerated(boolean value) {
+		this.generated = value;
 	}
 	
 	private boolean IsInsideChunk(int x, int y, int z) {

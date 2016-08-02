@@ -1,7 +1,6 @@
 package rendering;
 
 import static org.lwjgl.opengl.GL11.*;
-
 import java.util.ArrayList;
 
 import utils.Frustum;
@@ -38,14 +37,17 @@ public class MainRenderer {
 		CLIP_CALCUL = 0;
 		MODEL_CALCUL = 0;
 		Frustum frustum = Frustum.getFrustum(this.camera);
+		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_TEXTURE_2D);
+
+
+		glMatrixMode(GL_MODELVIEW);
+		glMatrixMode(GL_PROJECTION);
 		
 		glClearColor(0.1f, 0.2f, 0.8f, 1f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
-		glMatrixMode(GL_MODELVIEW);
-		glMatrixMode(GL_PROJECTION);
-		
-		glEnable(GL_DEPTH_TEST);
+
 		glEnable(GL_CULL_FACE);
 		glDepthFunc(GL_LESS);
 		glCullFace(GL_BACK);
@@ -66,6 +68,19 @@ public class MainRenderer {
 		MODEL_RENDERED = MODEL_CALCUL;
 		
 		glDisable(GL_DEPTH_TEST);
+		glDisable(GL_CULL_FACE);
+		glDisable(GL_TEXTURE_2D);
+		
+		glLineWidth(4);
+		glColor3f(1, 1, 1);
+		glBegin(GL_LINES);
+		glVertex2f(-0.03f, 0f);
+		glVertex2f(0.03f, 0f);
+		glEnd();
+		glBegin(GL_LINES);
+		glVertex2f(0, -0.03f);
+		glVertex2f(0, 0.03f);
+		glEnd();
 	}
 	
 	public void Cleanup() {

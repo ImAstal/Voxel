@@ -53,6 +53,7 @@ public class WorldGenerator {
 			}
 		}
 		
+		chunk.SetGenerated(true);
 		return chunk;
 	}
 	
